@@ -64,11 +64,16 @@ const getUser = new Promise(function(todoBien,todoMal) {
     (async function load() {
         async function getData (url) {
           const response = await fetch(url);
+<<<<<<< HEAD
           const data = await response.json();
           if (data.data.movie_count > 0) {
             return data
           }
           throw new Error('No se encontró ningun resultado');
+=======
+          const data = await response.json()
+          return data
+>>>>>>> origin/master
         }
 
       const $form = document.getElementById('form');
@@ -108,6 +113,7 @@ const getUser = new Promise(function(todoBien,todoMal) {
 
         $featuringContainer.append($loader);
         const data = new FormData($form);
+<<<<<<< HEAD
         // const peli = await getData(`${BASE_API}list_movies.json?limit=1&query_term=${data.get('name')}`)
         //Puedo deconstruir un objeto oara acceder a un campo dentro del mismo
         //Dentro de 'peli' accedo a 'data' y dentro de data a 'movies' lo puedo expresar adipisicin
@@ -129,6 +135,19 @@ const getUser = new Promise(function(todoBien,todoMal) {
 
       function videoItemTemplate (movie, category) {
         return (`<div class="primaryPlaylistItem" data-id="${movie.id}" data-category=${category}>
+=======
+        const peli = await getData(`${BASE_API}list_movies.json?limit=1&query_term=${data.get('name')}`)
+        const HTMLString = featuringTemplate(peli.data.movies[0]);
+        $featuringContainer.innerHTML = HTMLString;
+      })
+
+      const actionList = await getData(`${BASE_API}list_movies.json?genre=action`)
+      const dramaList = await getData(`${BASE_API}list_movies.json?genre=drama`)
+      const animationList = await getData(`${BASE_API}list_movies.json?genre=animation`)
+
+      function videoItemTemplate (movie) {
+        return (`<div class="primaryPlaylistItem">
+>>>>>>> origin/master
           <div class="primaryPlaylistItem-image">
             <img src="${movie.medium_cover_image}">
           </div>
@@ -148,6 +167,7 @@ const getUser = new Promise(function(todoBien,todoMal) {
       const $modal    = document.getElementById('modal');
       const $overlay  = document.getElementById('overlay');
 
+<<<<<<< HEAD
       function findById (list, id){
         return list.find((movie) => {
             return movie.id === parseInt(id, 10)
@@ -180,6 +200,11 @@ const getUser = new Promise(function(todoBien,todoMal) {
         $modalTitle.textContent = data.title;
         $modalImage.setAttribute('src', data.medium_cover_image);
         $modalDescription.textContent = data.description_full;
+=======
+      function showModal() {
+        $overlay.classList.add('active');
+        $modal.style.animation = 'modalIn .8s forwards';
+>>>>>>> origin/master
       }
 
       const $hideModal = document.getElementById('hide-modal');
@@ -192,6 +217,7 @@ const getUser = new Promise(function(todoBien,todoMal) {
 
       function addEventClick($element) {
         $element.addEventListener('click', function() {
+<<<<<<< HEAD
           showModal($element);
         })
       }
@@ -206,10 +232,23 @@ const getUser = new Promise(function(todoBien,todoMal) {
           image.addEventListener('load', (event) => {
             event.srcElement.classList.add('fadeIn');
           })
+=======
+          showModal();
+        })
+      }
+
+      function renderMovieList (list, $container) {
+        $container.children[0].remove();
+        list.forEach((movie) => {
+          const HTMLString = videoItemTemplate(movie);
+          const movieElement = createTemplate(HTMLString);
+          $container.append(movieElement)
+>>>>>>> origin/master
           addEventClick(movieElement);
         })
       }
 
+<<<<<<< HEAD
     async function cacheExist(category) {
       const listName = `${category}List`;
       const cacheList = window.localStorage.getItem(listName);
@@ -242,5 +281,19 @@ const getUser = new Promise(function(todoBien,todoMal) {
     // window.localStorage.setItem('animationList', JSON.stringify(animationList));
     const $animationContainer = document.getElementById('animation');
     renderMovieList (animationList, $animationContainer, 'animation');
+=======
+    const $actionContainer = document.querySelector('#action');
+    renderMovieList (actionList.data.movies, $actionContainer);
+
+    const $dramaContainer = document.getElementById('drama');
+    renderMovieList (dramaList.data.movies, $dramaContainer);
+
+    const $animationContainer = document.getElementById('animation');
+    renderMovieList (animationList.data.movies, $animationContainer);
+
+    const $modalImage = $modal.querySelector('img');
+    const $modalTitle = $modal.querySelector('h1');
+    const $modalDescription = $modal.querySelector('p');
+>>>>>>> origin/master
 
     })()
