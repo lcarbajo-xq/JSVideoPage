@@ -241,11 +241,7 @@ body {
 
 
 .fadeIn {
-<<<<<<< HEAD
   animation: 5000ms fadeIn;
-=======
-  animation: 1000ms fadeIn;
->>>>>>> origin/master
 }
 
 @keyframes fadeIn {
