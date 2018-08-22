@@ -38,7 +38,7 @@ const getUser = new Promise(function(todoBien,todoMal) {
     })
 
 
-    $.ajax('https://randomuser.me/api/', {
+    $.ajax('https://randomuser.me/api/?results=10', {
     method: 'GET',
     success: function(data) {
       console.log(data);
@@ -48,13 +48,13 @@ const getUser = new Promise(function(todoBien,todoMal) {
     }
   });
 
-  fetch('https://randomuser.me/api')
+  fetch('https://randomuser.me/api/?results=10')
     .then(function(response) {
     // console.log(response)
       return response.json()
     })
     .then(function(user) {
-      console.log('user', user.results[0].name.first)
+      console.log(user)
     })
     .catch(function() {
       console.log('ALGO FALLO!')
@@ -69,6 +69,15 @@ const getUser = new Promise(function(todoBien,todoMal) {
             return data
           }
           throw new Error('No se encontró ningun resultado');
+        }
+
+        async function getDataFriends (url) {
+          const response = await fetch(url);
+          const data = await response.json();
+          if (data.info.results > 0) {
+            return data
+          }
+          throw new Error('No se encontró ningun ususario');
         }
 
       const $form = document.getElementById('form');
@@ -96,15 +105,29 @@ const getUser = new Promise(function(todoBien,todoMal) {
         )
       }
 
-      $form.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        $home.classList.add('search-active');
-        const $loader = document.createElement('img');
-        setAttributes($loader, {
-          src: 'src/images/loader.gif',
-          height: 50,
-          width: 50,
-        })
+
+      function friendsTemplate (friend) {
+        return (
+          `<li class="playlistFriends-item">
+            <a href="#">
+              <img src="${friend.picture.thumbnail}" alt="echame la culpa" />
+              <span>
+                ${friend.name.first.toUpperCase()} ${friend.name.last.toUpperCase()}
+              </span>
+            </a>
+          </li>`
+        )
+      }
+
+        $form.addEventListener('submit', async function(event) {
+          event.preventDefault();
+          $home.classList.add('search-active');
+          const $loader = document.createElement('img');
+          setAttributes($loader, {
+            src: 'src/images/loader.gif',
+            height: 50,
+            width: 50,
+          })
 
         $featuringContainer.append($loader);
         const data = new FormData($form);
@@ -172,6 +195,7 @@ const getUser = new Promise(function(todoBien,todoMal) {
       const $modalDescription = $modal.querySelector('p');
 
       function showModal($element) {
+        debugger;
         $overlay.classList.add('active');
         $modal.style.animation = 'modalIn .8s forwards';
         const id = $element.dataset.id;
@@ -210,6 +234,20 @@ const getUser = new Promise(function(todoBien,todoMal) {
         })
       }
 
+      function renderFriendList (list, $container) {
+        $container.children[0].remove();
+        list.results.forEach((friend) => {
+          const HTMLString = friendsTemplate(friend); //friend.name.first
+          const friendElement = createTemplate(HTMLString);
+          $container.append(friendElement);
+          // const image = movieElement.querySelector('img');
+          // image.addEventListener('load', (event) => {
+          //   event.srcElement.classList.add('fadeIn');
+          // })
+          // addEventClick(movieElement);
+        })
+      }
+
     async function cacheExist(category) {
       const listName = `${category}List`;
       const cacheList = window.localStorage.getItem(listName);
@@ -227,6 +265,10 @@ const getUser = new Promise(function(todoBien,todoMal) {
         window.localStorage.setItem(listName, JSON.stringify(data));
         return data
     }
+
+    const $friendListContainer = document.getElementById("playlistFriends");
+    const friendList = await getDataFriends(`https://randomuser.me/api/?results=10`);
+    renderFriendList (friendList, $friendListContainer)
 
     const actionList = await cacheExist('action');
     // window.localStorage.setItem('actionList', JSON.stringify(actionList));
